@@ -38,7 +38,8 @@
       }
     ],
     "import/prefer-default-export": "off",
-    "no-unused-expressions": "off"
+    "no-unused-expressions": "off",
+    "comma-dangle": "off"
   },
   "settings": {
     "import/resolver": {
