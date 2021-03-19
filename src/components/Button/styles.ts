@@ -5,7 +5,6 @@ export const Container = styled(RectButton)`
   background: #ff9000;
   border-radius: 10px;
   height: 60px;
-  width: 100%;
   margin-top: 8px;
 
   align-items: center;
