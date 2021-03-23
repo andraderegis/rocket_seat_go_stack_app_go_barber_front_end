@@ -1,15 +1,31 @@
 import React, { RefObject, useCallback, useRef } from 'react';
-import { Image, View, KeyboardAvoidingView, Platform, ScrollView, TextInput } from 'react-native';
+import {
+  Alert,
+  Image,
+  View,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  TextInput
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Form } from '@unform/mobile';
 import { FormHandles } from '@unform/core';
 import Icon from 'react-native-vector-icons/Feather';
+import * as Yup from 'yup';
 
 import { Container, Title, BackToSignButtom, BackToSignButtomText } from './styles';
 import Button from '../../components/Button';
 import Input from '../../components/Input';
 
 import logoImg from '../../assets/logo.png';
+
+import getValidationErrors from '../../utils/getValidationErrors';
+interface SignUpFormData {
+  name: string;
+  email: string;
+  password: string;
+}
 
 const SignUp = (): JSX.Element => {
   const navigation = useNavigation();
@@ -21,6 +37,42 @@ const SignUp = (): JSX.Element => {
   const handleSubmitForm = () => {
     formRef.current?.submitForm();
   };
+
+  const handleSignUp = useCallback(async (data: SignUpFormData) => {
+    try {
+      formRef.current?.setErrors({});
+
+      const schema = Yup.object().shape({
+        name: Yup.string().required('Nome obrigatório'),
+        email: Yup.string().required('Email obrigatório').email('Digite um e-mail válido'),
+        password: Yup.string().min(6, 'No mínimo 6 dígitos')
+      });
+
+      await schema.validate(data, {
+        abortEarly: false
+      });
+
+      // await api.post('/users', data);
+
+      // history.push('/');
+
+      // addToast({
+      //   type: 'success',
+      //   title: 'Cadastro realizado!',
+      //   description: 'Você já pode fazer o seu logon no GoBarber!'
+      // });
+    } catch (error) {
+      if (error instanceof Yup.ValidationError) {
+        const validateErrors = getValidationErrors(error);
+
+        formRef.current?.setErrors(validateErrors);
+
+        return;
+      }
+
+      Alert.alert('Erro na cadastro', 'Ocorreu um erro ao fazer o cadastro.');
+    }
+  }, []);
 
   const onSubmitEditingInputFocus = (inputRef: RefObject<TextInput>) => {
     return () => {
@@ -42,12 +94,7 @@ const SignUp = (): JSX.Element => {
               <Title>Crie a sua conta</Title>
             </View>
 
-            <Form
-              ref={formRef}
-              onSubmit={(data: any) => {
-                console.log(data);
-              }}
-            >
+            <Form ref={formRef} onSubmit={handleSignUp}>
               <Input
                 autoCapitalize="words"
                 returnKeyType="next"
