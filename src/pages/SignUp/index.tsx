@@ -39,39 +39,42 @@ const SignUp = (): JSX.Element => {
     formRef.current?.submitForm();
   };
 
-  const handleSignUp = useCallback(async (data: SignUpFormData) => {
-    try {
-      formRef.current?.setErrors({});
+  const handleSignUp = useCallback(
+    async (data: SignUpFormData) => {
+      try {
+        formRef.current?.setErrors({});
 
-      const schema = Yup.object().shape({
-        name: Yup.string().required('Nome obrigatório'),
-        email: Yup.string().required('Email obrigatório').email('Digite um e-mail válido'),
-        password: Yup.string().min(6, 'No mínimo 6 dígitos')
-      });
+        const schema = Yup.object().shape({
+          name: Yup.string().required('Nome obrigatório'),
+          email: Yup.string().required('Email obrigatório').email('Digite um e-mail válido'),
+          password: Yup.string().min(6, 'No mínimo 6 dígitos')
+        });
 
-      await schema.validate(data, {
-        abortEarly: false
-      });
+        await schema.validate(data, {
+          abortEarly: false
+        });
 
-      await api.post('/users', data);
+        await api.post('/users', data);
 
-      Alert.alert('Cadastro realizado com sucesso!', 'Você pode realizar login na aplicação.');
+        Alert.alert('Cadastro realizado com sucesso!', 'Você pode realizar login na aplicação.');
 
-      navigation.goBack();
-    } catch (error) {
-      if (error instanceof Yup.ValidationError) {
-        const validateErrors = getValidationErrors(error);
+        navigation.goBack();
+      } catch (error) {
+        if (error instanceof Yup.ValidationError) {
+          const validateErrors = getValidationErrors(error);
 
-        formRef.current?.setErrors(validateErrors);
+          formRef.current?.setErrors(validateErrors);
 
-        return;
+          return;
+        }
+
+        console.log(error);
+
+        Alert.alert('Erro na cadastro', 'Ocorreu um erro ao fazer o cadastro.');
       }
-
-      console.log(error);
-
-      Alert.alert('Erro na cadastro', 'Ocorreu um erro ao fazer o cadastro.');
-    }
-  }, []);
+    },
+    [navigation]
+  );
 
   const onSubmitEditingInputFocus = (inputRef: RefObject<TextInput>) => {
     return () => {
