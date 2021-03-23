@@ -1,5 +1,5 @@
-import React, { useRef } from 'react';
-import { Image, View, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import React, { RefObject, useCallback, useRef } from 'react';
+import { Image, View, KeyboardAvoidingView, Platform, ScrollView, TextInput } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Form } from '@unform/mobile';
 import { FormHandles } from '@unform/core';
@@ -12,8 +12,21 @@ import Input from '../../components/Input';
 import logoImg from '../../assets/logo.png';
 
 const SignUp = (): JSX.Element => {
-  const formRef = useRef<FormHandles>(null);
   const navigation = useNavigation();
+
+  const formRef = useRef<FormHandles>(null);
+  const emailInputRef = useRef<TextInput>(null);
+  const passwordInputRef = useRef<TextInput>(null);
+
+  const handleSubmitForm = () => {
+    formRef.current?.submitForm();
+  };
+
+  const onSubmitEditingInputFocus = (inputRef: RefObject<TextInput>) => {
+    return () => {
+      inputRef.current?.focus();
+    };
+  };
 
   return (
     <>
@@ -29,10 +42,41 @@ const SignUp = (): JSX.Element => {
               <Title>Crie a sua conta</Title>
             </View>
 
-            <Form ref={formRef} onSubmit={() => { }}>
-              <Input name="name" icon="user" placeholder="Nome" />
-              <Input name="email" icon="mail" placeholder="E-mail" />
-              <Input name="password" icon="lock" placeholder="Senha" />
+            <Form
+              ref={formRef}
+              onSubmit={(data: any) => {
+                console.log(data);
+              }}
+            >
+              <Input
+                autoCapitalize="words"
+                returnKeyType="next"
+                name="name"
+                icon="user"
+                placeholder="Nome"
+                onSubmitEditing={onSubmitEditingInputFocus(emailInputRef)}
+              />
+              <Input
+                ref={emailInputRef}
+                autoCorrect={false}
+                autoCapitalize="none"
+                keyboardType="email-address"
+                returnKeyType="next"
+                name="email"
+                icon="mail"
+                placeholder="E-mail"
+                onSubmitEditing={onSubmitEditingInputFocus(passwordInputRef)}
+              />
+              <Input
+                ref={passwordInputRef}
+                secureTextEntry
+                textContentType="newPassword"
+                name="password"
+                icon="lock"
+                placeholder="Senha"
+                returnKeyType="send"
+                onSubmitEditing={handleSubmitForm}
+              />
 
               <Button
                 onPress={() => {

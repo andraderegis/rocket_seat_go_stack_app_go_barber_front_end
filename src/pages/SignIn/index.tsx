@@ -1,5 +1,5 @@
 import React, { useCallback, useRef } from 'react';
-import { Image, View, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { Image, KeyboardAvoidingView, Platform, ScrollView, TextInput, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Form } from '@unform/mobile';
 import { FormHandles } from '@unform/core';
@@ -20,11 +20,17 @@ import logoImg from '../../assets/logo.png';
 
 const SignIn = (): JSX.Element => {
   const navigation = useNavigation();
-  const formRef = useRef<FormHandles>(null);
 
-  const handleSignIn = useCallback((data: Object) => {
+  const formRef = useRef<FormHandles>(null);
+  const passwordInputRef = useRef<TextInput>(null);
+
+  const handleSignIn = useCallback((data: any) => {
     console.log(data);
-  });
+  }, []);
+
+  const handleSubmitForm = () => {
+    formRef.current?.submitForm();
+  };
 
   return (
     <>
@@ -41,16 +47,29 @@ const SignIn = (): JSX.Element => {
             </View>
 
             <Form ref={formRef} onSubmit={handleSignIn}>
-              <Input name="email" icon="mail" placeholder="E-mail" />
-              <Input name="password" icon="lock" placeholder="Senha" />
-
-              <Button
-                onPress={() => {
-                  formRef.current?.submitForm();
+              <Input
+                name="email"
+                icon="mail"
+                placeholder="E-mail"
+                autoCorrect={false}
+                autoCapitalize="none"
+                keyboardType="email-address"
+                returnKeyType="next"
+                onSubmitEditing={() => {
+                  passwordInputRef.current?.focus();
                 }}
-              >
-                Entrar
-              </Button>
+              />
+              <Input
+                ref={passwordInputRef}
+                name="password"
+                icon="lock"
+                placeholder="Senha"
+                secureTextEntry
+                returnKeyType="send"
+                onSubmitEditing={handleSubmitForm}
+              />
+
+              <Button onPress={handleSubmitForm}>Entrar</Button>
             </Form>
             <ForgotPassword onPress={() => { }}>
               <ForgotPasswordText>Esqueci minha senha</ForgotPasswordText>
