@@ -20,6 +20,7 @@ import Input from '../../components/Input';
 
 import logoImg from '../../assets/logo.png';
 
+import api from '../../services/api';
 import getValidationErrors from '../../utils/getValidationErrors';
 interface SignUpFormData {
   name: string;
@@ -52,15 +53,11 @@ const SignUp = (): JSX.Element => {
         abortEarly: false
       });
 
-      // await api.post('/users', data);
+      await api.post('/users', data);
 
-      // history.push('/');
+      Alert.alert('Cadastro realizado com sucesso!', 'Você pode realizar login na aplicação.');
 
-      // addToast({
-      //   type: 'success',
-      //   title: 'Cadastro realizado!',
-      //   description: 'Você já pode fazer o seu logon no GoBarber!'
-      // });
+      navigation.goBack();
     } catch (error) {
       if (error instanceof Yup.ValidationError) {
         const validateErrors = getValidationErrors(error);
@@ -69,6 +66,8 @@ const SignUp = (): JSX.Element => {
 
         return;
       }
+
+      console.log(error);
 
       Alert.alert('Erro na cadastro', 'Ocorreu um erro ao fazer o cadastro.');
     }
@@ -130,7 +129,7 @@ const SignUp = (): JSX.Element => {
                   formRef.current?.submitForm();
                 }}
               >
-                Entrar
+                Cadastrar
               </Button>
             </Form>
           </Container>
