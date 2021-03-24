@@ -120,7 +120,7 @@ const SignIn = (): JSX.Element => {
 
               <Button onPress={handleSubmitForm}>Entrar</Button>
             </Form>
-            <ForgotPassword onPress={() => { }}>
+            <ForgotPassword>
               <ForgotPasswordText>Esqueci minha senha</ForgotPasswordText>
             </ForgotPassword>
           </Container>

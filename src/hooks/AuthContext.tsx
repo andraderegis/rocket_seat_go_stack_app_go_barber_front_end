@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import api from '../services/api';
 
 interface AuthContextData {
+  loading: boolean;
   user: AuthUserData;
   signIn(credentials: SignInCredentials): Promise<void>;
   signOut(): void;
@@ -34,6 +35,7 @@ const AuthContext = createContext<AuthContextData>({} as AuthContextData);
 
 export const AuthProvider: React.FC = ({ children }) => {
   const [authState, setAuthState] = useState<AuthState>({} as AuthState);
+  const [loading, setLoading] = useState(true);
 
   const loadStorageData = async () => {
     const [token, user] = await AsyncStorage.multiGet([
@@ -47,6 +49,8 @@ export const AuthProvider: React.FC = ({ children }) => {
     if (tokenData && userData) {
       setAuthState({ token: tokenData, user: JSON.parse(userData) });
     }
+
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -76,7 +80,7 @@ export const AuthProvider: React.FC = ({ children }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user: authState.user, signIn, signOut }}>
+    <AuthContext.Provider value={{ loading, user: authState.user, signIn, signOut }}>
       {children}
     </AuthContext.Provider>
   );
